@@ -18,7 +18,6 @@ public class BIOClient {
             String rsp = in.readLine();
             System.out.printf("客户端收到服务端响应： " + rsp);
         }
-
     }
 
 }

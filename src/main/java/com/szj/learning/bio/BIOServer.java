@@ -10,18 +10,34 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.szj.learning.bio.BIOConstant.SERVER_PORT;
 
 public class BIOServer {
 
-
     public static void main(String[] args) throws IOException {
+        fakeSyncIo();
+    }
 
+    // 简单的BIO通信
+    public static void simpleBIOServer() throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
             while (true) {
                 Socket socket = serverSocket.accept();
                 new Thread(new BIOServerHandler(socket)).start();
+            }
+        }
+    }
+
+    // 伪异步IO
+    public static void fakeSyncIo() throws IOException {
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
+            while (true) {
+                Socket socket = serverSocket.accept();
+                executor.execute(new BIOServerHandler(socket));
             }
         }
     }
@@ -40,7 +56,9 @@ public class BIOServer {
                 String body;
                 while (true) {
                     body = in.readLine();
-                    if (body == null) break;
+                    if (body == null) {
+                        break;
+                    }
                     System.out.printf("服务端收到请求: " + body);
                     out.println("服务端的响应");
                 }
