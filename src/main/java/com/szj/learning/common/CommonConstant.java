@@ -1,6 +1,6 @@
-package com.szj.learning.bio;
+package com.szj.learning.common;
 
-public interface BIOConstant {
+public interface CommonConstant {
 
     int SERVER_PORT = 8080;
 

@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import static com.szj.learning.bio.BIOConstant.*;
+import static com.szj.learning.common.CommonConstant.*;
 
 public class BIOClient {
 

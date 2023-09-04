@@ -86,5 +86,11 @@
     - 会不断轮询注册在其上的 channel ，如果在 channel 上发生读写事件，那么这个 channel 就处于就绪状态，会被 selector 轮询出来；
     - JDK 使用 epoll 实现多路复用。
 
-### NOI服务端序列
+### NIO服务端序列
 ![img.png](img/nio_server_sequence.png)
+### NIO客户端序列
+![img.png](img/img.png)
+
+### NIO通信
+
+代码见 com.szj.learning.nio.*
