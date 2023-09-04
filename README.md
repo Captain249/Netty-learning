@@ -89,7 +89,7 @@
 ### NIO服务端序列
 ![img.png](img/nio_server_sequence.png)
 ### NIO客户端序列
-![img.png](img/img.png)
+![img.png](img/nio_client_sequence.png)
 
 ### NIO通信
 

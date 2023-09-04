@@ -26,7 +26,6 @@ public class NIOServer {
 
     private final ServerSocketChannel serverSocketChannel;
 
-
     public NIOServer() throws IOException {
         selector = Selector.open();
         serverSocketChannel = ServerSocketChannel.open();
