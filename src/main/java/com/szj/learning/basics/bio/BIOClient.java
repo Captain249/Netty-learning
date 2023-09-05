@@ -1,4 +1,4 @@
-package com.szj.learning.bio;
+package com.szj.learning.basics.bio;
 
 import java.io.BufferedReader;
 import java.io.IOException;

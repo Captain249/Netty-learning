@@ -64,7 +64,7 @@
 服务端每收到客户端的连接请求，都会创建一个**新线程**进行链路处理。
  
 代码见
-`com.szj.learning.bio.*`
+`com.szj.learning.basics.bio.*`
 
 ### NIO相关概念
 
@@ -93,9 +93,15 @@
 
 ### NIO通信
 
-代码见 com.szj.learning.nio.*
+代码见 com.szj.learning.basics.nio.*
 
-容易出错的代码：
+### AIO通信(NIO2.0)
+
+    真正的异步非阻塞型IO，和NIO的区别在于不需要 selector 轮询结果，而是自动通知回调函数。
+
+代码见 com.szj.learning.basics.aio.*
+
+重点代码解析：
 
     CompletionHandler<V,A> 这个是 AIO 库中用于异步回调的接口，定义了两个方法：completed() 和 failed()，分别用于操作成功和操作失败时的回调。
     这里的两个泛型参数的意义如下：
@@ -113,3 +119,10 @@
     其实可以看出 CompletionHandler 在某一类特定的场景下，IO 操作对象都是固定的，
     例如 accept 中的 V 为 AsynchronousSocketChannel，read、write 中的 V 为 Integer，
     但是 A 都是人为定义的，是由前面的方法传参过来的，例如 accept 中的 A 传给 CompletionHandler 中的 A...
+
+
+## 第3章 Netty入门应用
+
+### Netty 简单通信
+
+代码见 com.szj.learning.netty.*
