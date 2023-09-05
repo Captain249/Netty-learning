@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.szj.learning.common.CommonConstant.SERVER_PORT;
+import static com.szj.learning.common.Constant.SERVER_PORT;
 
 public class BIOServer {
 

@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.szj.learning.common.CommonConstant;
+import com.szj.learning.common.Constant;
 
 /**
  * @author shenzhuojun
@@ -31,7 +31,7 @@ public class NIOServer {
         serverSocketChannel = ServerSocketChannel.open();
         // 配置 server 端 channel 为非阻塞(实质是设置打开的 fd 为非阻塞 IOUtil.configureBlocking(fd, block))
         serverSocketChannel.configureBlocking(false);
-        serverSocketChannel.socket().bind(new InetSocketAddress(CommonConstant.LOCAL_HOST, CommonConstant.SERVER_PORT), 1024);
+        serverSocketChannel.socket().bind(new InetSocketAddress(Constant.LOCAL_HOST, Constant.SERVER_PORT), 1024);
         // 在 selector 上注册 ACCEPT 事件
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
     }

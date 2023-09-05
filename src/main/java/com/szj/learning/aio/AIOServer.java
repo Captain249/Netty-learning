@@ -1,6 +1,6 @@
 package com.szj.learning.aio;
 
-import com.szj.learning.common.CommonConstant;
+import com.szj.learning.common.Constant;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.TimeUnit;
 
 public class AIOServer {
 
@@ -15,32 +16,40 @@ public class AIOServer {
 
     public AIOServer() throws IOException {
         asynchronousServerSocketChannel = AsynchronousServerSocketChannel.open();
-        asynchronousServerSocketChannel.bind(new InetSocketAddress(CommonConstant.LOCAL_HOST, CommonConstant.SERVER_PORT));
+        asynchronousServerSocketChannel.bind(new InetSocketAddress(Constant.LOCAL_HOST, Constant.SERVER_PORT));
     }
 
-    private void run() {
+    private void run() throws InterruptedException {
 
-        // 1.accept 第一个参数 attachment 是需要附加到IO操作的对象，服务端可以固定为 AsynchronousServerSocketChannel 类型（此参数可以为null）， 第二个参数固定为 CompletionHandler
-        // 2.CompletionHandler 的第一个泛型参数是 AsynchronousSocketChannel 类型，第二个泛型参数是 1 中的 attachment 对象
-        // 3.completed 处理 accept 成功， failed 是失败。
-        asynchronousServerSocketChannel.accept(asynchronousServerSocketChannel, new CompletionHandler<AsynchronousSocketChannel, AsynchronousServerSocketChannel>() {
+        // attachment 相当于是传参给后面回调接口 CompletionHandler，这里不需要
+        asynchronousServerSocketChannel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
+
             @Override
-            public void completed(AsynchronousSocketChannel result, AsynchronousServerSocketChannel attachment) {
+            public void completed(AsynchronousSocketChannel result, Void attachment) {
                 // 这是必要的一步，继续接受下一个 client 的 accept
-                attachment.accept(attachment, this);
+                asynchronousServerSocketChannel.accept(attachment, this);
+
                 ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-                // read 第一个参数固定是 buffer（数据读到这个缓冲区）
-                // 第二个参数是 IO 操作对象，也是该 buffer
-                // 第三个参数是读取操作完成（或失败）时调用的结果处理程序
+                // 第一个 byteBuffer 是指把数据读给 byteBuffer
+                // 第二个 byteBuffer 是指把 attachment 传参给后面的 ReadCompletionHandler 中的 A 泛型对象。
+                // 其实和这里把 result 传参进去作为 ReadCompletionHandler 的全局变量差不多意思，只是 A 传的是局部变量
                 result.read(byteBuffer, byteBuffer, new ReadCompletionHandler(result));
             }
 
             @Override
-            public void failed(Throwable exc, AsynchronousServerSocketChannel attachment) {
+            public void failed(Throwable exc, Void attachment) {
                 // 继续接受下一个 client 的 accept
-                attachment.accept(attachment, this);
+                asynchronousServerSocketChannel.accept(attachment, this);
             }
         });
 
+        while (true) {
+            TimeUnit.SECONDS.sleep(1);
+        }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        AIOServer aioServer = new AIOServer();
+        aioServer.run();
     }
 }

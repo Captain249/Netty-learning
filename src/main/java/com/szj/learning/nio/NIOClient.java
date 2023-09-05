@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.szj.learning.common.CommonConstant;
+import com.szj.learning.common.Constant;
 
 /**
  * @author shenzhuojun
@@ -60,12 +60,13 @@ public class NIOClient {
 
     private void doConnect() throws IOException {
         // 由于客户端设置的是非阻塞的，connect 方法会在连接完成之前返回
-        if (socketChannel.connect(new InetSocketAddress(CommonConstant.LOCAL_HOST, CommonConstant.SERVER_PORT))) {
+        if (socketChannel.connect(new InetSocketAddress(Constant.LOCAL_HOST, Constant.SERVER_PORT))) {
             // 注册 read 事件
             socketChannel.register(selector, SelectionKey.OP_READ);
             sendMsgToServer();
         } else {
             // 还没连接完成，需要注册连接完成事件
+            // 当服务端返回 TCP syn-ack 消息后，selector 就会轮询到这个事件
             socketChannel.register(selector, SelectionKey.OP_CONNECT);
         }
     }

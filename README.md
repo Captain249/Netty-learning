@@ -94,3 +94,22 @@
 ### NIO通信
 
 代码见 com.szj.learning.nio.*
+
+容易出错的代码：
+
+    CompletionHandler<V,A> 这个是 AIO 库中用于异步回调的接口，定义了两个方法：completed() 和 failed()，分别用于操作成功和操作失败时的回调。
+    这里的两个泛型参数的意义如下：
+    V - 代表 I/O 操作结果的类型。例如，在读或写操作中，V 通常是 Integer，代表成功读取或写入的字节数。
+    A - 代表附加的类型，这是一个用于传递给 CompletionHandler 的可选对象。你可以使用它来传递任何你认为在回调中可能需要的信息。在上述示例中，我们使用了 ByteBuffer 作为附加的类型。
+
+    对于 AsynchronousSocketChannel 的 read、write 操作的 CompletionHandler：
+    V 是 Integer，表示从操作中读取或写入的字节数。
+    A 是 ByteBuffer，表示在操作中使用的缓冲区。
+
+    对于 AsynchronousServerSocketChannel 的 accept 操作的 CompletionHandler：
+    V 是 AsynchronousSocketChannel，表示接受的新的 socket 连接。
+    A 是 Void，因为我们在这个特定的回调中不需要附加任何特定的信息。
+
+    其实可以看出 CompletionHandler 在某一类特定的场景下，IO 操作对象都是固定的，
+    例如 accept 中的 V 为 AsynchronousSocketChannel，read、write 中的 V 为 Integer，
+    但是 A 都是人为定义的，是由前面的方法传参过来的，例如 accept 中的 A 传给 CompletionHandler 中的 A...
