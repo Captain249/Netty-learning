@@ -61,7 +61,7 @@ public class MsgpackSerialization {
 
         @Override
         public User read(Unpacker unpacker, User user, boolean required) throws IOException {
-            // trySkipNil 检查当前从 Unpacker 读取的值是否为 nil。如果是，则跳过它，并返回true；否则不执行任何操作并返回false。
+            // trySkipNil 检查当前从 unpacker 读取的值是否为 nil。如果是，则跳过它，并返回true；否则不执行任何操作并返回false。
             if (!required && unpacker.trySkipNil()) {
                 return null;
             }
