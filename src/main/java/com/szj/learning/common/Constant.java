@@ -1,6 +1,10 @@
 package com.szj.learning.common;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public interface Constant {
 
@@ -21,5 +25,9 @@ public interface Constant {
     String SERVER_OFF = "服务端下线";
 
     String STR_END = System.getProperty("line.separator");
+
+    String DELIMITER = "$_";
+
+    ByteBuf DELIMITER_BUF = Unpooled.copiedBuffer(DELIMITER.getBytes(StandardCharsets.UTF_8));
 
 }

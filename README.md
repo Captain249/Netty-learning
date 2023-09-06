@@ -127,7 +127,7 @@
 
 代码见 com.szj.learning.netty.simple.*
 
-## 第4章 TCP粘包/拆包
+## 第4章 TCP粘包/拆包问题的解决之道
 
 client 向 server 发送 D1、D2 两个数据包，会发生如下4种情况（第5种D1、D2都被拆成更小的数据包）：
 ![img.png](img/tcp_package.png)
@@ -164,4 +164,5 @@ TCP粘包的原因：
     LineBasedFrameDecoder 的作用是遍历 ByteBuf 的可读字节，并识别数据的结束位置。(以换行符未结束标志，\n 或者 \r\n)
     如果到了最大长度还是没有发现换行符，就会抛出异常，同时忽略之前读到的异常码流。
 
-    
+
+## 第5章 分隔符和定长解码器的应用
