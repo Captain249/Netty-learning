@@ -1,4 +1,4 @@
-package com.szj.learning.netty;
+package com.szj.learning.netty.simple;
 
 import com.szj.learning.common.Constant;
 import io.netty.bootstrap.Bootstrap;

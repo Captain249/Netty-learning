@@ -10,14 +10,16 @@ public interface Constant {
 
     InetSocketAddress LOCAL_ADDRESS = new InetSocketAddress(LOCAL_HOST, SERVER_PORT);
 
-    String CLIENT_SEND_MSG = "客户端发送的消息";
+    String CLIENT_SEND_MSG = "客户端发送的消息\t";
 
-    String SERVER_RSP_MSG = "服务端响应的消息";
+    String SERVER_RSP_MSG = "服务端响应的消息\t";
 
     String SOCKET_DISCONNECT = "通信断开";
 
     String CLIENT_OFF = "客户端下线";
 
     String SERVER_OFF = "服务端下线";
+
+    String STR_END = System.getProperty("line.separator");
 
 }

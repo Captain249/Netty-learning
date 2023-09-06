@@ -1,4 +1,4 @@
-package com.szj.learning.netty;
+package com.szj.learning.netty.simple;
 
 
 import java.nio.charset.StandardCharsets;

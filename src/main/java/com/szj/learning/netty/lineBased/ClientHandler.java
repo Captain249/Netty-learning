@@ -1,4 +1,4 @@
-package com.szj.learning.netty;
+package com.szj.learning.netty.lineBased;
 
 import java.nio.charset.StandardCharsets;
 
@@ -17,23 +17,24 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        byte[] bytes = Constant.CLIENT_SEND_MSG.getBytes(StandardCharsets.UTF_8);
-        ByteBuf buffer = Unpooled.buffer(bytes.length);
-        buffer.writeBytes(bytes);
-        ctx.writeAndFlush(buffer);
+        // 循环为了验证简单Netty通信时的拆包/粘包问题
+        for (int i = 0; i < 100; i++) {
+            byte[] bytes = (Constant.CLIENT_SEND_MSG + Constant.STR_END).getBytes(StandardCharsets.UTF_8);
+            ByteBuf buffer = Unpooled.buffer(bytes.length);
+            buffer.writeBytes(bytes);
+            ctx.writeAndFlush(buffer);
+        }
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf byteBuf = (ByteBuf) msg;
-        byte[] bytes = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(bytes);
-        String body = new String(bytes, StandardCharsets.UTF_8);
+        String body = (String) msg;
         System.out.println("客户端收到响应: " + body);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
         ctx.close();
     }
 }
