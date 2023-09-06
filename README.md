@@ -127,7 +127,7 @@
 
 代码见 com.szj.learning.netty.simple.*
 
-## 第4章 TCP粘包/拆包问题的解决之道
+## 第4章 TCP粘包/拆包问题
 
 client 向 server 发送 D1、D2 两个数据包，会发生如下4种情况（第5种D1、D2都被拆成更小的数据包）：
 ![img.png](img/tcp_package.png)
@@ -165,4 +165,20 @@ TCP粘包的原因：
     如果到了最大长度还是没有发现换行符，就会抛出异常，同时忽略之前读到的异常码流。
 
 
-## 第5章 分隔符和定长解码器的应用
+## 第5章 分隔符和定长解码器
+
+代码见 com.szj.learning.netty.delimiterBase.*
+
+重点代码解析：
+
+    DelimiterBasedFrameDecoder 指定某个字符作为消息的结束字符，其他逻辑和 上面的 LineBasedFrameDecoder 代码一样类似。
+    FixedLengthFrameDecoder 指定长度接收消息。
+
+## 第6章 编解码技术
+
+### JDK编解码
+
+代码见 com.szj.learning.netty.serialization.jdk.*
+
+    JDK编解码占用空间大，时间慢，性能差不推荐使用。
+
