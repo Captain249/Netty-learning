@@ -182,3 +182,10 @@ TCP粘包的原因：
 
     JDK编解码占用空间大，时间慢，性能差不推荐使用。
 
+### messagepack编解码
+
+代码见 com.szj.learning.netty.serialization.messagepack。*
+
+重点代码解析
+
+    使用 messagepack 编解码一个自定义的对象类型，需要提前注册这个类型的 template，代码见 MsgpackSerialization。

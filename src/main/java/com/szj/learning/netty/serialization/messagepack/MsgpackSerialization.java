@@ -1,14 +1,11 @@
 package com.szj.learning.netty.serialization.messagepack;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.szj.learning.netty.serialization.User;
 import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.msgpack.template.AbstractTemplate;
-import org.msgpack.template.Templates;
 import org.msgpack.unpacker.Unpacker;
 
 /**
@@ -41,7 +38,7 @@ public class MsgpackSerialization {
         System.out.println(read);
     }
 
-    private static class UserTemplate extends AbstractTemplate<User> {
+    public static class UserTemplate extends AbstractTemplate<User> {
 
         @Override
         public void write(Packer packer, User user, boolean required) throws IOException {

@@ -11,7 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class MsgpackClient {
 
-    private static void connect() throws InterruptedException {
+    private void connect() throws InterruptedException {
         NioEventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap bootstrap = new Bootstrap();
@@ -21,8 +21,8 @@ public class MsgpackClient {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast("msgpack decoder", new MsgpackDecoder())
-                                    .addLast("msgpack encoder", new MsgpackEncoder())
+                            ch.pipeline().addLast(new MsgpackDecoder())
+                                    .addLast(new MsgpackEncoder())
                                     .addLast(new MsgpackClientHandler(ch));
                         }
                     });
