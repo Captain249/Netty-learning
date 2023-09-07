@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+//生成 proto 文件所在包路径
+package com.szj.learning.netty.serialization.protobuf;
+
+//生成 proto 文件所在包路径
+option java_package = "com.szj.learning.netty.serialization.protobuf";
+
+//生成 proto 文件名
+option java_outer_classname = "UserProto";
+
+message User {
+  string name = 1;
+  int32 uid = 2;
+}

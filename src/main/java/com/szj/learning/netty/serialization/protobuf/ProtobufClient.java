@@ -1,4 +1,4 @@
-package com.szj.learning.netty.serialization.messagepack;
+package com.szj.learning.netty.serialization.protobuf;
 
 import com.szj.learning.common.Constant;
 import io.netty.bootstrap.Bootstrap;
@@ -8,10 +8,17 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 
-public class MsgpackClient {
+/**
+ * @author shenzhuojun
+ * @version 1.0 2023/9/7 7:41 下午
+ * @Description
+ */
+public class ProtobufClient {
 
     private void connect() throws InterruptedException {
         NioEventLoopGroup group = new NioEventLoopGroup();
@@ -19,15 +26,14 @@ public class MsgpackClient {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group).channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, true)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(65535, 0, 2, 0, 2))
-                                    .addLast(new MsgpackDecoder())
-                                    .addLast(new LengthFieldPrepender(2))
-                                    .addLast(new MsgpackEncoder())
-                                    .addLast(new MsgpackClientHandler(ch));
+                            ch.pipeline().addLast(new ProtobufVarint32FrameDecoder())
+                                    .addLast(new ProtobufDecoder(UserProto.User.getDefaultInstance()))
+                                    .addLast(new ProtobufVarint32LengthFieldPrepender())
+                                    .addLast(new ProtobufEncoder())
+                                    .addLast(new ProtobufClientHandler(ch));
                         }
                     });
             ChannelFuture f = bootstrap.connect(Constant.LOCAL_HOST, Constant.SERVER_PORT).sync();
@@ -38,7 +44,7 @@ public class MsgpackClient {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new MsgpackClient().connect();
+        new ProtobufClient().connect();
     }
 
 }

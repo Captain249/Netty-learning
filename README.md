@@ -184,8 +184,81 @@ TCP粘包的原因：
 
 ### messagepack编解码
 
+    使用 messagepack 编解码一个自定义的对象类型，需要提前注册这个类型的 template，代码见 MsgpackSerialization。
+
+
 代码见 com.szj.learning.netty.serialization.messagepack。*
 
-重点代码解析
+重点代码解析：
 
-    使用 messagepack 编解码一个自定义的对象类型，需要提前注册这个类型的 template，代码见 MsgpackSerialization。
+    protected void initChannel(SocketChannel ch) throws Exception {
+        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(65535,0,2,0,2))
+                .addLast(new MsgpackDecoder())
+                .addLast(new LengthFieldPrepender(2))
+                .addLast(new MsgpackEncoder())
+                .addLast(new MsgpackServerHandler(ch));
+    }
+
+    这样的写法默认把消息头设置为2个字节，且仅代表长度的字段。
+
+    LengthFieldBasedFrameDecoder：用来根据长度字段解析数据报，几个参数的含义：
+    //  int maxFrameLength 最大的 frame 数据长度
+    //  int lengthFieldOffset length 字段的字节数偏移量
+    //  int lengthFieldLength length 字段占用的字节数
+    //  int lengthAdjustment  需要调整的长度 比如 length(4) head(2) content(n) 此字段为 2
+    //  int initialBytesToStrip 往下面传递时，需要跳过的字节数，从起始位置开始而非 length 字段
+
+    LengthFieldPrepender：如果协议中的第一个字段为长度字段，它可以计算当前待发送消息的二进制字节长度，将该长度添加到 ByteBuf 的缓冲区头中。
+    
+    入站事件（即从网络端读取的数据）是从 pipeline 的头部开始处理，然后依次经过每一个 handler，直到 pipeline 的尾部；而出站事件（即准备写入网络的数据）则是从 pipeline 的尾部开始处理，并依次经过每一个 handler，直到 pipeline 的头部。
+
+困惑很久的一个问题 —— 为什么 pipeline 中的 addLast 一定要那样排列：
+
+    在给定的代码中：
+    LengthFieldBasedFrameDecoder 和 MsgpackDecoder 是入站的，它们用于处理从网络中接收的数据。
+    LengthFieldPrepender 和 MsgpackEncoder 是出站的，它们用于处理准备写入到网络的数据。
+    MsgpackServerHandler 可能包含对入站数据的处理逻辑（例如处理解码后的对象）和对出站数据的处理逻辑（例如写入一个新的消息或响应）。
+   
+    考虑以下场景：
+    
+    当一个数据包到达时，它首先通过 LengthFieldBasedFrameDecoder，然后通过 MsgpackDecoder，并最后传递给 MsgpackServerHandler 进行处理。
+    在处理数据后，MsgpackServerHandler 可能想要发送一个响应。此时，这个响应首先通过 MsgpackEncoder 进行编码，然后通过 LengthFieldPrepender 添加一个长度字段，最后写入到网络。
+    因此，MsgpackEncoder 需要位于 MsgpackServerHandler 之前，确保在 MsgpackServerHandler 决定写入一个消息时，这个消息会先经过 MsgpackEncoder 进行编码，再经过 LengthFieldPrepender 添加长度字段，最后发送到网络。
+
+### protoBuf编解码
+
+    1.mac安装: brew install protobuf
+    
+    2.pom.xml
+     <!--  protobuf 支持 Java 核心包-->
+    <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>3.23.2</version>
+    </dependency>
+
+    3.user.proto 文件
+    src/main/resources/user.proto
+    
+    4.执行
+    protoc --java_out=. user.proto
+    
+通信代码见：com.szj.learning.netty.serialization.protobuf.*
+
+重点代码解析：
+
+    .childHandler(new ChannelInitializer<SocketChannel>() {
+        @Override
+        protected void initChannel(SocketChannel ch) throws Exception {
+            ch.pipeline().addLast(new ProtobufVarint32FrameDecoder())// Varint32 编码的长度前缀()
+                    .addLast(new ProtobufDecoder(UserProto.User.getDefaultInstance()))// 解码
+                    .addLast(new ProtobufVarint32LengthFieldPrepender())// 发送的 protobuf 消息前面添加一个长度字段，这个长度字段使用 Varint32 编码
+                    .addLast(new ProtobufEncoder())// 编码
+                    .addLast(new ProtobufServerHandler(ch));
+        }
+    });
+    
+    ProtobufVarint32FrameDecoder: 使用Varint32编码来解析长度，（变长，每8位中，第1位代表后面是否还有代表长度的字节，后7位代表长度）
+    例如 10101100 00000010 -> 低7位 0101100:44  高7位 00000010:2 = 44 + 2<<7 = 300
+    
+    ProtobufVarint32LengthFieldPrepender: 发送的 protobuf 消息前面添加一个长度字段，这个长度字段使用 Varint32 编码

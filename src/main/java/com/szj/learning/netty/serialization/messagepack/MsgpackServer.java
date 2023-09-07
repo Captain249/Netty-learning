@@ -8,6 +8,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 
 /**
  * @author shenzhuojun
@@ -26,7 +28,9 @@ public class MsgpackServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new MsgpackDecoder())
+                            ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(65535,0,2,0,2))
+                                    .addLast(new MsgpackDecoder())
+                                    .addLast(new LengthFieldPrepender(2))
                                     .addLast(new MsgpackEncoder())
                                     .addLast(new MsgpackServerHandler(ch));
                         }
