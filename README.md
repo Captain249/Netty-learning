@@ -262,3 +262,25 @@ TCP粘包的原因：
     例如 10101100 00000010 -> 低7位 0101100:44  高7位 00000010:2 = 44 + 2<<7 = 300
     
     ProtobufVarint32LengthFieldPrepender: 发送的 protobuf 消息前面添加一个长度字段，这个长度字段使用 Varint32 编码
+
+## HTTP协议开发应用
+
+代码见 com.szj.learning.netty.http.*
+
+重点代码解析：
+    
+    protected void initChannel(SocketChannel ch) throws Exception {
+        ch.pipeline().addLast(new HttpRequestDecoder())
+                .addLast(new HttpObjectAggregator(65536))
+                .addLast(new HttpResponseEncoder())
+                .addLast(new ChunkedWriteHandler())
+                .addLast(new HttpFileServerHandler());
+    }
+
+    HttpObjectAggregator: 将 HTTP 消息的多个部分（如请求头、请求体、响应头、响应体等）聚合成一个完整的 HTTP 消息对象。（单一的FullHttpRequest 或者 FullHttpResponse)
+    聚合的最大消息大小为 65536字节，如果超过会抛出异常。
+
+    ChunkedWriteHandler: 允许将数据分成小块（chunks），并逐个块地写入到通道中。用于处理大型文件、数据流或需要逐块处理的数据时。将数据分成块可以降低内存占用，因为不需要一次性将整个数据加载到内存中。
+    对应 ChannelFuture sendFileFuture = ctx.write(new ChunkedFile(randomAccessFile, 0, length, 8192), ctx.newProgressivePromise()); 8192就是 chunkSize
+
+    
