@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Test</title>
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+      }
+      #status {
+          color: red;
+      }
+  </style>
+</head>
+<body>
+
+<h2>WebSocket Connection Test</h2>
+<p id="status">Status: Disconnected</p>
+<button id="connectBtn">Connect</button>
+<br><br>
+
+<input type="text" id="messageInput" placeholder="Type a message...">
+<button id="sendBtn">Send</button>
+
+<script>
+    let socket;
+    const statusEl = document.getElementById('status');
+    const connectBtn = document.getElementById('connectBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('messageInput');
+
+    connectBtn.addEventListener('click', function() {
+        socket = new WebSocket('ws://localhost:8080');
+
+        socket.onopen = function(event) {
+            statusEl.textContent = 'Status: Connected';
+            statusEl.style.color = 'green';
+            connectBtn.disabled = true;
+        };
+
+        socket.onmessage = function(event) {
+            alert('Received: ' + event.data);
+        };
+
+        socket.onclose = function(event) {
+            statusEl.textContent = 'Status: Disconnected';
+            statusEl.style.color = 'red';
+            connectBtn.disabled = false;
+        };
+
+        socket.onerror = function(error) {
+            alert('WebSocket Error: ' + error.message);
+        };
+    });
+
+    sendBtn.addEventListener('click', function() {
+        if(socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(messageInput.value);
+        } else {
+            alert('WebSocket not connected');
+        }
+    });
+</script>
+
+</body>
+</html>

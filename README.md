@@ -283,4 +283,12 @@ TCP粘包的原因：
     ChunkedWriteHandler: 允许将数据分成小块（chunks），并逐个块地写入到通道中。用于处理大型文件、数据流或需要逐块处理的数据时。将数据分成块可以降低内存占用，因为不需要一次性将整个数据加载到内存中。
     对应 ChannelFuture sendFileFuture = ctx.write(new ChunkedFile(randomAccessFile, 0, length, 8192), ctx.newProgressivePromise()); 8192就是 chunkSize
 
+    SimpleChannelInboundHandler 和 ChannelInboundHandlerAdapter 都是处理入站事件（即从外部来源到Netty应用程序的事件）的处理器基类。但它们之间存在一些关键的区别：
     
+    泛型支持：
+    SimpleChannelInboundHandler<T>: 它是一个泛型类，可以用来指定只处理特定类型的消息。例如，SimpleChannelInboundHandler<ByteBuf> 只处理 ByteBuf 类型的消息。对于不是该指定类型的消息，channelRead0 方法不会被调用。
+    ChannelInboundHandlerAdapter: 这个类不使用泛型。你需要手动检查消息的类型并进行相应的处理。
+   
+    资源管理：
+    SimpleChannelInboundHandler: 它自动释放与channelRead0方法相关联的数据对象（例如ByteBuf），以避免内存泄漏。如果你需要保留这个对象，你必须调用 ReferenceCountUtil.retain()。
+    ChannelInboundHandlerAdapter: 它不会自动释放任何资源。如果你处理了一个 ReferenceCounted 对象，你需要确保正确地管理其生命周期，包括在必要时调用 release()。
