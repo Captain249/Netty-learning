@@ -1,7 +1,7 @@
 # Netty-learning
 系统学习Netty，基于《Netty权威指南-第2版》，归纳每章节的重点。
 
-## 第1章 Java 的IO 演进之路
+## 第1章 IO 演进之路
 ### 一、五种IO模型
     
     recvfrom 函数可用于从已连接的套接字接口获取数据。
@@ -56,7 +56,7 @@
     
     select、poll、epoll 都需要内核把 FD 消息通知给用户空间，epoll 通过内核和用户空间使用同一块内存实现。
 
-## 第2章 NIO入门
+## NIO入门
 
     网络套接字 = socket
 
@@ -121,7 +121,7 @@
     但是 A 都是人为定义的，是由前面的方法传参过来的，例如 accept 中的 A 传给 CompletionHandler 中的 A...
 
 
-## 第3章 Netty入门应用
+## Netty入门应用
 
 ### Netty 简单通信
 
@@ -165,7 +165,7 @@ TCP粘包的原因：
     如果到了最大长度还是没有发现换行符，就会抛出异常，同时忽略之前读到的异常码流。
 
 
-## 第5章 分隔符和定长解码器
+## 分隔符和定长解码器
 
 代码见 com.szj.learning.netty.delimiterBase.*
 
@@ -292,3 +292,23 @@ TCP粘包的原因：
     资源管理：
     SimpleChannelInboundHandler: 它自动释放与channelRead0方法相关联的数据对象（例如ByteBuf），以避免内存泄漏。如果你需要保留这个对象，你必须调用 ReferenceCountUtil.retain()。
     ChannelInboundHandlerAdapter: 它不会自动释放任何资源。如果你处理了一个 ReferenceCounted 对象，你需要确保正确地管理其生命周期，包括在必要时调用 release()。
+
+## WebSocket协议开发
+
+服务端代码见 com.szj.learning.netty.websocket.* 
+
+客户端代码见 /resources/webSocket.html
+
+重点代码解析
+
+    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) {
+        ...
+        if (req.decoderResult().isFailure() || !"websocket".equals(req.headers().get("Upgrade"))) {
+            sendErr(ctx, 500, "不是需要建立 websocket 的 http 请求");
+            return;
+        }
+        ...
+    }
+    这是由于客户端在进行 webSocket 连接的消息类型中，特征就是请求头携带 Upgrade: websocket
+
+![img.png](img/websocket.png)
