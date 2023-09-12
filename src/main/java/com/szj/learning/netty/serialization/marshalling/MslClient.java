@@ -25,6 +25,8 @@ public class MslClient {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            // 序列化的数据本身包含了消息的完整信息，包括数据的长度和类型等。
+                            // 反序列化器能够从序列化的数据中恢复出原始的对象，而不需要额外的消息边界信息。
                             ch.pipeline().addLast(MslCodecFactory.buildMslDecoder())
                                     .addLast(MslCodecFactory.buildMslEncoder())
                                     .addLast(new MslClientHandler(ch));

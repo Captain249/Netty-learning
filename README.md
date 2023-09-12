@@ -263,6 +263,21 @@ TCP粘包的原因：
     
     ProtobufVarint32LengthFieldPrepender: 发送的 protobuf 消息前面添加一个长度字段，这个长度字段使用 Varint32 编码
 
+### marshalling 编解码
+
+代码见 com.szj.learning.netty.serialization.marshalling.*
+
+重点代码解析：
+    
+    protected void initChannel(SocketChannel ch) throws Exception {
+        ch.pipeline().addLast(MslCodecFactory.buildMslDecoder())
+                .addLast(MslCodecFactory.buildMslEncoder())
+                .addLast(new MslServerHandler(ch));
+    }
+    为什么例如 Protobuf 需要考虑拆包粘包问题？（引入ProtobufVarint32FrameDecoder），但是 marshalling 不需要呢？
+    原因在于 marshalling 本身序列化的数据就包含完整的信息，包括数据的长度和类型等。
+    而 Protobuf 序列话数据的长度需要 ProtobufVarint32FrameDecoder 帮它填充。
+
 ## HTTP协议开发应用
 
 代码见 com.szj.learning.netty.http.*

@@ -9,9 +9,12 @@ import org.msgpack.MessagePack;
 
 import java.util.List;
 
+// 讲一个消息类型转为另一个消息类型
+// 过来的是 ByteBuf 出去的是 List<Object> list
 public class MsgpackDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     private static final MessagePack msgpack = new MessagePack();
+
     {
         msgpack.register(User.class, new UserTemplate());
     }

@@ -36,4 +36,8 @@ public class User implements Serializable {
         buffer.get(bytesForOut);
         return bytesForOut;
     }
+
+    protected void test(){
+        System.out.println("test");
+    }
 }

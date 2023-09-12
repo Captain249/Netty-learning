@@ -15,9 +15,9 @@ public class MslClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        User[] users = new User[]{new User("沈卓钧", 1), new User("粽子", 2)};
-        for (User user : users) {
-            ctx.writeAndFlush(user);
+        User szj = new User("沈卓钧", 1);
+        for (int i = 0; i < 100; i++) {
+            ctx.writeAndFlush(szj);
         }
     }
 

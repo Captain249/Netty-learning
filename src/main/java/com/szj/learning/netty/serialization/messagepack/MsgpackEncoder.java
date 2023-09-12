@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.msgpack.MessagePack;
 
+// 过来的是 Object 出去的是 byteBuf
 public class MsgpackEncoder extends MessageToByteEncoder<Object> {
 
     private static final MessagePack msgpack = new MessagePack();
