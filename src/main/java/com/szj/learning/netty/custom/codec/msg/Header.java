@@ -1,9 +1,10 @@
-package com.szj.learning.netty.custom.codec;
+package com.szj.learning.netty.custom.codec.msg;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author shenzhuojun
@@ -11,14 +12,15 @@ import lombok.Data;
  * @Description
  */
 @Data
+@NoArgsConstructor
 public class Header {
 
-    private final int crcCode = 0xabef0101;// 版本号
+    private int crcCode = 0xabef0101;// 版本号
     private int length;// 消息长度
     private long sessionId;// 会话ID
     private byte type;// 消息类型
     private byte priority;// 消息优先级
-    private final Map<String, Object> attachment = new HashMap<>();
+    private Map<String, Object> attachment = new HashMap<>();
 
     public Header(int length, long sessionId, byte type, byte priority) {
         this.length = length;

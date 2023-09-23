@@ -1,4 +1,4 @@
-package com.szj.learning.netty.custom.codec;
+package com.szj.learning.netty.custom.codec.msg;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
